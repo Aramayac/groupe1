@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Ajouter un utilisateur</h2>
+<form method="POST">
+  {{ form.hidden_tag() }}
+  <div class="mb-3">{{ form.nom.label }} {{ form.nom(class="form-control") }}</div>
+  <div class="mb-3">{{ form.prenom.label }} {{ form.prenom(class="form-control") }}</div>
+  <div class="mb-3">{{ form.age.label }} {{ form.age(class="form-control") }}</div>
+  <div class="mb-3">{{ form.nationalite.label }} {{ form.nationalite(class="form-control") }}</div>
+  {{ form.submit(class="btn btn-primary") }}
+</form>
+{% endblock %}

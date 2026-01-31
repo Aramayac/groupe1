@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Modifier l’utilisateur</h2>
+<form method="POST" class="row g-3">
+  <div class="col-md-6">
+    <input type="text" name="nom" class="form-control" value="{{ user.nom }}" required>
+  </div>
+  <div class="col-md-6">
+    <input type="text" name="prenom" class="form-control" value="{{ user.prenom }}" required>
+  </div>
+  <div class="col-md-4">
+    <input type="number" name="age" class="form-control" value="{{ user.age }}" required>
+  </div>
+  <div class="col-md-8">
+    <input type="text" name="nationalite" class="form-control" value="{{ user.nationalite }}" required>
+  </div>
+  <div class="col-12">
+    <button type="submit" class="btn btn-success">Enregistrer</button>
+    <a href="{{ url_for('home') }}" class="btn btn-secondary">Annuler</a>
+  </div>
+</form>
+{% endblock %}
