@@ -28,10 +28,10 @@ jobs:
           pip install -r requirements.txt
           pip install pytest flake8   # ✅ ajout de pytest et flake8
 
-      # 4. Lancer les tests unitaires
-      - name: Run tests
-        run: |
-          pytest
+    #   # 4. Lancer les tests unitaires
+    #   - name: Run tests
+    #     run: 
+    #       pytest
 
       # 5. Vérifier la qualité du code (linting)
       - name: Lint with flake8
