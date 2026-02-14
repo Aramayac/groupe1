@@ -10,11 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Récupérer le code
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # 2. Configurer SSH
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -24,34 +21,20 @@ jobs:
         env:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
-
-      # 3. Créer le dossier distant
-      - name: Create target directory on EC2
+      - name: Copy project to EC2 (SCP)
         run: |
-          ssh -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST "mkdir -p /home/ubuntu/${{ github.repository }}"
+          scp -i ~/.ssh/id_rsa -r ./ $EC2_USER@$EC2_HOST:/home/ubuntu/${{ github.repository }}
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
 
-      # 4. Copier le projet sur EC2 (sans .git)
-      - name: Copy project to EC2 (rsync)
-        run: |
-          rsync -avz --exclude='.git' -e "ssh -i ~/.ssh/id_rsa" ./ $EC2_USER@$EC2_HOST:/home/ubuntu/${{ github.repository }}
-        env:
-          EC2_USER: ${{ secrets.EC2_USER }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
-
-      # 5. Installer dépendances et lancer Flask
       - name: Install dependencies and run app
         run: |
-          ssh -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST << 'EOF'
+          ssh $EC2_USER@$EC2_HOST << EOF
           cd /home/ubuntu/${{ github.repository }}
           python3 -m venv venv
-          venv/bin/pip install --upgrade pip
           venv/bin/pip install -r requirements.txt
           nohup venv/bin/python app.py > app.log 2>&1 &
-          sleep 5
-          tail -n 5 app.log   # ✅ affiche les logs
           EOF
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
