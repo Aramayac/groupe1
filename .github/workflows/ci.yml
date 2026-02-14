@@ -51,7 +51,7 @@ jobs:
           venv/bin/pip install -r requirements.txt
           nohup venv/bin/python app.py > app.log 2>&1 &
           sleep 5
-          tail -n 50 app.log   # ✅ affiche les logs
+          tail -n 5 app.log   # ✅ affiche les logs
           EOF
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
