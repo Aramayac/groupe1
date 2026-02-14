@@ -33,10 +33,10 @@ jobs:
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
 
-      # 4. Copier le projet sur EC2
-      - name: Copy project to EC2 (SCP)
+      # 4. Copier le projet sur EC2 (sans .git)
+      - name: Copy project to EC2 (rsync)
         run: |
-          scp -i ~/.ssh/id_rsa -r ./ $EC2_USER@$EC2_HOST:/home/ubuntu/${{ github.repository }}
+          rsync -avz --exclude='.git' -e "ssh -i ~/.ssh/id_rsa" ./ $EC2_USER@$EC2_HOST:/home/ubuntu/${{ github.repository }}
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
