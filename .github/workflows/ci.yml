@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -21,6 +22,14 @@ jobs:
         env:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
+
+      - name: Create target directory on EC2
+        run: |
+          ssh -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST "mkdir -p /home/ubuntu/${{ github.repository }}"
+        env:
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+
       - name: Copy project to EC2 (SCP)
         run: |
           scp -i ~/.ssh/id_rsa -r ./ $EC2_USER@$EC2_HOST:/home/ubuntu/${{ github.repository }}
@@ -30,9 +39,10 @@ jobs:
 
       - name: Install dependencies and run app
         run: |
-          ssh $EC2_USER@$EC2_HOST << EOF
+          ssh -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST << EOF
           cd /home/ubuntu/${{ github.repository }}
           python3 -m venv venv
+          venv/bin/pip install --upgrade pip
           venv/bin/pip install -r requirements.txt
           nohup venv/bin/python app.py > app.log 2>&1 &
           EOF
