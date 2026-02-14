@@ -22,4 +22,4 @@ logging.basicConfig(
 
 if __name__ == "__main__":
     app.logger.info("🚀 Démarrage de l'application Flask sur 0.0.0.0:5001")
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    app.run(host="0.0.0.0", port=5007, debug=True)
