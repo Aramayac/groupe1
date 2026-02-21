@@ -1,25 +1,29 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from routes.user_routes import *  # ✅ Import unique
-
 import logging
+from flask import Flask
+from config import Config
+from extensions import db, migrate
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'ma_cle_secrete_super_securisee'
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+    db.init_app(app)
+    migrate.init_app(app, db)
 
-# ✅ Configurer les logs
-logging.basicConfig(
-    filename="app.log",        # fichier log
-    level=logging.INFO,        # niveau de log
-    format="%(asctime)s [%(levelname)s] %(message)s"
-)
+    from routes.user_routes import user_bp
+    app.register_blueprint(user_bp)
+
+    logging.basicConfig(
+        filename="app.log",
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s"
+    )
+
+    with app.app_context():
+        db.create_all()
+
+    return app
 
 if __name__ == "__main__":
-    app.logger.info("🚀 Démarrage de l'application Flask sur 0.0.0.0:5001")
+    app = create_app()
     app.run(host="0.0.0.0", port=5001, debug=True)
